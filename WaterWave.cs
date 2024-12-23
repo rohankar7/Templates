@@ -65,30 +65,21 @@ public class WaterWave : MonoBehaviour
         {
             spline.SetPosition(i + 2, waterSprings[i].WaterSpringEffect(spline.GetPosition(i+2).x, spline.GetPosition(i+2).y));
         }
-        float[] leftDeltas = new float[waterSprings.Count];
-        float[] rightDeltas = new float[waterSprings.Count];
-
-        for (int j = 0; j < 1; j++)
+        float[] leftHeightDiffs = new float[waterSprings.Count];
+        float[] rightHeightDiffs = new float[waterSprings.Count];
+        for (int i = 0; i < waterSprings.Count; i++)
         {
-            for (int i = 0; i < waterSprings.Count; i++)
+            if (i > 0)
             {
-                if (i > 0)
-                {
-                    leftDeltas[i] = spread * (waterSprings[i].height - waterSprings[i - 1].height);
-                    waterSprings[i - 1].velocity += leftDeltas[i];
-                }
-                if (i < waterSprings.Count - 1)
-                {
-                    rightDeltas[i] = spread * (waterSprings[i].height - waterSprings[i + 1].height);
-                    waterSprings[i + 1].velocity += rightDeltas[i];
-                }
+                leftHeightDiffs[i] = spread * (waterSprings[i].height - waterSprings[i - 1].height);
+                waterSprings[i - 1].velocity += leftHeightDiffs[i];
+                waterSprings[i - 1].height += leftHeightDiffs[i];
             }
-            for (int i = 0; i < waterSprings.Count; i++)
+            if (i < waterSprings.Count - 1)
             {
-                if (i > 0)
-                    waterSprings[i - 1].height += leftDeltas[i];
-                if (i < waterSprings.Count - 1)
-                    waterSprings[i + 1].height += rightDeltas[i];
+                rightHeightDiffs[i] = spread * (waterSprings[i].height - waterSprings[i + 1].height);
+                waterSprings[i + 1].velocity += rightHeightDiffs[i];
+                waterSprings[i + 1].height += rightHeightDiffs[i];
             }
         }
     }
@@ -100,7 +91,7 @@ public class WaterWave : MonoBehaviour
         public float height;
         public float targetHeight;
         public float velocity = 0f;
-        public float force = 0f;
+        private float force = 0f;
         private float mass = 1f;
 
         public WaterSpring(float height, float targetHeight, float stiffness, float damping)
